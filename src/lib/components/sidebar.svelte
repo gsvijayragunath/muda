@@ -30,7 +30,7 @@
   style="width: 256px;"
 >
   <div class="p-6 text-center">
-    <h1 class="text-pink-500 text-2xl font-bold">MUDA</h1>
+    <h1 class="text-red-500 text-2xl font-bold">Navigation-Bar</h1>
   </div>
   <div class="px-6">
     <h2 class="text-gray-500 text-xs font-semibold mb-2">MAIN MENU</h2>

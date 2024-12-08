@@ -7,14 +7,14 @@
     let isCheckingAuth = true;
   
     onMount(async () => {
-      await checkAuth();
+      checkAuth();
       isCheckingAuth = false;
   
       if (!$isLoggedIn) {
         goto("/signin");
       } else {
         // @ts-ignore
-        goto("/onlineorders")
+        goto("/")
       }
     });
   </script>

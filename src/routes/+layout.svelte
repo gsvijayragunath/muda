@@ -6,6 +6,7 @@
     import { isLoggedIn, checkAuth } from "$lib/stores/global.js";
     import { goto } from "$app/navigation";
     import "../app.css";
+    import { text } from "@sveltejs/kit";
   
     let username = "";
     let email = "";
@@ -16,12 +17,9 @@
   
     // Predefined sidebar and admin items
     const allSidebarItems = [
-      { text: "Online Orders", link: "/onlineorders" },
+      { text: "Online Orders", link: "/onlineorders"},
       { text: "Stocks Levels", link: "/stocklevels" },
       { text: "Business Partners", link: "/businesspartner" },
-    ];
-    const allAdminItems = [
-      { text: "Items", link: "/items" }
     ];
   
     let loading = true; // Add loading state to wait for auth check
@@ -33,29 +31,16 @@
       await checkAuth(); // Ensure this is awaited to prevent race conditions
   
       if (!$isLoggedIn) {
-        console.log("Redirecting to /signin...");
         goto("/signin");
       } else {
-        // Fetch user details only if logged in
         username = localStorage.getItem("UserName") || "";
         email = localStorage.getItem("Email") || "";
         if (username) {
           username = username[0].toUpperCase();
         }
-  
-        const userType = localStorage.getItem("UserType");
-        if (userType === "Admin" || userType === "Super Admin") {
-          usertype = userType;
-          sidebarItems = allSidebarItems;
-          adminItems = allAdminItems;
-        } else {
-          // If the user is a "Normal User", only pass "Online Orders"
-          usertype = "Normal User";
-          sidebarItems = [{ text: "Online Orders", link: "/onlineorder" }];
-          adminItems = []; // No admin items for normal users
+          sidebarItems = [{text:"Home",link:"/"},{ text: "Profile Cards", link: "/generateprofilecard" }];
+          adminItems = [];
         }
-      }
-  
       loading = false; // Mark loading as complete
     });
   

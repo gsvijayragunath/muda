@@ -1,148 +1,137 @@
 <script>
-// @ts-nocheck
+    // @ts-nocheck
+    import { onMount, onDestroy } from "svelte";
+    import { goto } from "$app/navigation";
+    import cral from "../../sdk/cral";
+    import Loader from "$lib/components/loader.svelte";
+    import Popup from "$lib/components/popup.svelte";
+  
+    let passwordVisible = false;
+    let username = "";
+    let password = "";
+    let message = "";
+    let type = "";
+    let showPopup = false;
+    let loading = false;
+    let hideScrollbar = false;
+  
+    function triggerPopup(popupType, popupMessage) {
+      type = popupType;
+      message = popupMessage;
+      showPopup = true;
+      setTimeout(() => {
+        showPopup = false;
+        message = "";
+      }, 3000);
+    }
+  
+    function togglePasswordVisibility() {
+      passwordVisible = !passwordVisible;
+    }
+  
+    function signin() {
+      loading = true;
+      cral
+        .SignIn(username, password)
+        .then((response) => {
+          loading = false;
+          const { token,user_name, user_id, user_type,email } = response.data.data;
+          console.log(response)
 
-  import { onMount, onDestroy } from "svelte";
-  import { goto } from "$app/navigation";
-  import cral from "../../sdk/cral";
-  import Loader from "$lib/components/loader.svelte";
-  import Popup from "$lib/components/popup.svelte";
-
-  let passwordVisible = false;
-  let username = "";
-  let password = "";
-  let message = "";
-  let type = "";
-  let showPopup = false;
-  let loading = false;
-  let hideScrollbar = false;
-
-  function triggerPopup(popupType, popupMessage) {
-    type = popupType;
-    message = popupMessage;
-    showPopup = true;
-    setTimeout(() => {
-      showPopup = false;
-      message = "";
-    }, 3000);
-  }
-
-  function togglePasswordVisibility() {
-    passwordVisible = !passwordVisible;
-  }
-
-  function signin() {
-    loading = true;
-    cral
-      .SignIn(username, password)
-      .then((response) => {
-        loading = false;
-        const { token, Email, FullName, UserName, userid, UserType } =
-          response.data;
-
-        if (UserType === "Api User") {
-          triggerPopup("error", "User not Allowed");
-          return;
-        }
-
-        localStorage.setItem("token", token);
-        localStorage.setItem("Email", Email);
-        localStorage.setItem("FullName", FullName);
-        localStorage.setItem("UserName", UserName);
-        localStorage.setItem("Userid", userid);
-        localStorage.setItem("UserType", UserType);
-
-        triggerPopup("success", "Logged in Successfully");
-        goto("/");
-      })
-      .catch((error) => {
-        loading = false;
-        const errorMessage = error.response?.data?.message || error.message;
-        triggerPopup("error", errorMessage);
-      });
-  }
-
-  onMount(() => {
-    hideScrollbar = true;
-  });
-
-  onDestroy(() => {
-    hideScrollbar = false;
-  });
-</script>
-
-<div
-  class={`flex items-center justify-center min-h-screen bg-white ${hideScrollbar ? "overflow-hidden" : ""}`}
->
-  <div class="text-center">
-    <h1 class="text-4xl font-bold text-pink-500 mb-8">MUDA</h1>
-    <p class="text-lg text-gray-700 mb-6">
-      <span class="font-bold">Welcome back!</span> Please sign in to continue.
-    </p>
-    <div class="bg-white p-8 rounded-lg shadow-md w-96 mx-auto">
+          localStorage.setItem("token", token);
+          localStorage.setItem("UserName", user_name);
+          localStorage.setItem("Userid", user_id);
+          localStorage.setItem("UserType", user_type);
+          localStorage.setItem("Email",email)
+  
+          triggerPopup("success", "Logged in Successfully");
+          goto("/");
+        })
+        .catch((error) => {
+          console.log(error)
+          loading = false;
+          const errorMessage = error.response?.data?.error?.message || error.message;
+          console.log(errorMessage)
+          triggerPopup("error", errorMessage);
+        });
+    }
+  
+    onMount(() => {
+      hideScrollbar = true;
+    });
+  
+    onDestroy(() => {
+      hideScrollbar = false;
+    });
+  </script>
+  
+  <div
+    class={`flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-900 to-white ${hideScrollbar ? "overflow-hidden" : ""}`}
+  >
+    <div class="w-full sm:w-[400px] bg-white p-8  shadow-lg transition-all duration-300 ease-in-out">
+      <h1 class="text-3xl md:text-4xl font-extrabold text-pink-500 text-center mb-4">EFFY-GRAVATAR</h1>
+      <p class="text-black text-2xl text-center mb-10 font-semibold">
+         Sign in to access your profile dashboard.
+      </p>
       <form on:submit|preventDefault={signin}>
+        <!-- Username Input -->
         <div class="mb-4">
-          <label
-            for="text"
-            class="block text-left text-gray-700 mb-2 md:font-bold"
-            >Login ID/Email</label
-          >
+          <label class="block text-xl font-medium text-gray-700 mb-1" for="username">Email</label>
           <input
             type="text"
-            id="text"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            id="username"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Enter your email"
+            required
             bind:value={username}
           />
         </div>
-        <div class="mb-6 relative">
-          <label
-            for="password"
-            class="block text-left text-gray-700 mb-2 md:font-bold"
-            >Password</label
-          >
-          <div
-            class="flex items-center border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-blue-500"
-          >
+  
+        <!-- Password Input with Toggle -->
+        <div class="mb-4 relative">
+          <label class="block text-xl font-medium text-gray-700 mb-1" for="password">Password</label>
+          <div class="flex items-center border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-blue-400">
             {#if passwordVisible}
               <input
-                id="password"
-                class="w-full px-3 py-2 focus:outline-none"
-                bind:value={password}
                 type="text"
+                class="w-full px-3 py-2 focus:outline-none"
+                required
+                bind:value={password}
+                placeholder="Enter your password"
               />
             {:else}
               <input
-                id="password"
-                class="w-full px-3 py-2 focus:outline-none"
-                bind:value={password}
                 type="password"
+                class="w-full px-3 py-2 focus:outline-none"
+                required
+                bind:value={password}
+                placeholder="Enter your password"
               />
             {/if}
             <button
               type="button"
-              class="px-3 py-2 text-gray-500 focus:outline-none"
+              class="px-3 py-2 text-sm text-blue-600 hover:text-blue-800 transition-all"
               on:click={togglePasswordVisibility}
             >
-              <img
-                src={passwordVisible ? "/view.png" : "/hide.png"}
-                alt="Toggle Password Visibility"
-                class="h-5 w-5"
-              />
+              {passwordVisible ? "Hide" : "Show"}
             </button>
           </div>
         </div>
+  
+        <!-- Submit Button -->
         <button
           type="submit"
-          class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-200 ease-in-out focus:outline-none"
         >
           Login
         </button>
       </form>
     </div>
   </div>
-</div>
-
-{#if showPopup}
-  <Popup {message} {type} duration={3000} />
-{/if}
-
-<Loader bind:loading />
+  
+  <!-- Loading & Popup Components -->
+  {#if showPopup}
+    <Popup {message} {type} duration={3000} />
+  {/if}
+  <Loader bind:loading />
+  
