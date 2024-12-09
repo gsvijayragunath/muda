@@ -32,7 +32,7 @@
         if (username) {
           username = username[0].toUpperCase();
         }
-          sidebarItems = [{text:"Home",link:"/"},{ text: "Profile Cards", link: "/generateprofilecard" }];
+          sidebarItems = [{text:"Home",link:"/"},{ text: "Profile Cards", link: "/generateprofilecard" },{text:"QR Code",link:"/qrcode"}];
           adminItems = [];
         }
       loading = false;
