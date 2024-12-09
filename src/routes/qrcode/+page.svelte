@@ -16,7 +16,7 @@
         try {
             console.log(inputData)
             const response = await axios.post(
-                "http://localhost:8080/qrcode",
+                "http://ec2-3-106-226-134.ap-southeast-2.compute.amazonaws.com:8081/qrcode",
                 { data: inputData }
             );
 
