@@ -4,9 +4,6 @@ export default {
   theme: {
     extend: {
       colors: {
-        customBlue: "#1D4ED8",
-        customGreen: "#10B981",
-        customText: "#363D47",
       },
       fontFamily: {
         sans: ["Roboto", "sans-serif"],

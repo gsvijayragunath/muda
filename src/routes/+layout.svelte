@@ -14,21 +14,15 @@
     let usertype = "";
     let sidebarItems = [];
     let adminItems = [];
+
   
-    // Predefined sidebar and admin items
-    const allSidebarItems = [
-      { text: "Online Orders", link: "/onlineorders"},
-      { text: "Stocks Levels", link: "/stocklevels" },
-      { text: "Business Partners", link: "/businesspartner" },
-    ];
+    let loading = true; 
   
-    let loading = true; // Add loading state to wait for auth check
-  
-    $: loggedIn = $isLoggedIn; // Reactive statement to track login status
+    $: loggedIn = $isLoggedIn; 
   
     onMount(async () => {
       console.log("Checking authentication...");
-      await checkAuth(); // Ensure this is awaited to prevent race conditions
+      await checkAuth(); 
   
       if (!$isLoggedIn) {
         goto("/signin");
@@ -41,7 +35,7 @@
           sidebarItems = [{text:"Home",link:"/"},{ text: "Profile Cards", link: "/generateprofilecard" }];
           adminItems = [];
         }
-      loading = false; // Mark loading as complete
+      loading = false;
     });
   
     function toggleSidebar() {
@@ -50,12 +44,10 @@
   </script>
   
   {#if loading}
-    <!-- Show a loader while checking authentication -->
     <div class="flex h-screen justify-center items-center">
       <p>Loading...</p>
     </div>
   {:else if loggedIn}
-    <!-- Render only if the user is logged in -->
     <div class="flex h-screen">
       <Sidebar {isMenuOpen} {sidebarItems} {usertype} {adminItems} />
       <div
